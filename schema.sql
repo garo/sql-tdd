@@ -1,0 +1,11 @@
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    login VARCHAR(20) NOT NULL UNIQUE,
+    full_name VARCHAR(40) NOT NULL
+);
+
+CREATE TABLE tweets (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) NOT NULL,
+    tweet VARCHAR(140) NOT NULL
+);
