@@ -3,9 +3,9 @@ require 'pp'
 
 RSpec.describe "schema" do
     before(:all) do
-        @all_conn = PG.connect(dbname: "test_db", port: 5432, user: "tdd_all", password: "tdd_all")
+        @all_conn = PG.connect(dbname: "test_db", port: 5433, user: "tdd_all", password: "tdd_all")
 
-        @conn = PG.connect(dbname: "test_db", port: 5432, user: "tdd_ro", password: "tdd_ro")
+        @conn = PG.connect(dbname: "test_db", port: 5433, user: "tdd_ro", password: "tdd_ro")
     end
 
     after(:all) do
@@ -29,6 +29,12 @@ RSpec.describe "schema" do
     describe "users" do
         it "can have user entries" do
             ret = @all_conn.exec "INSERT INTO users(login, full_name) VALUES('unique-user', 'first') RETURNING id"
+            expect(ret[0]["id"].to_i).to be > 0
+
+            ret = @all_conn.exec "SELECT * FROM users WHERE id = #{ret[0]["id"]}"
+            expect(ret[0]["login"]).to eq("unique-user")
+            expect(ret[0]["full_name"]).to eq("first")
+            
         end
 
         it "requires login names to be unique" do
